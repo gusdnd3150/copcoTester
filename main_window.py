@@ -6,6 +6,7 @@ Spec: OpenProtocol_Specification_R_2_14_0_9836 4415 01
 - Server 모드: PF6000 시뮬레이터 (Controller 역할, 클라이언트 자동 응답)
 """
 
+import socket as _socket
 from datetime import datetime
 
 from PySide6.QtCore import Qt, Slot, QTimer
@@ -850,11 +851,21 @@ class MainWindow(QMainWindow):
                 self._connect_btn.setText("리슨 시작")
                 self._status_lbl.setText("리슨 중지")
                 self.log.info("서버 중지")
+                self._mode_client.setEnabled(True)
+                self._mode_server.setEnabled(True)
             else:
+                try:
+                    with _socket.socket(_socket.AF_INET, _socket.SOCK_STREAM) as s:
+                        s.bind(('', port))
+                except OSError:
+                    self.log.error(f"포트 {port}이(가) 이미 사용 중입니다.")
+                    return
                 if self._server.listen(port):
                     self._connect_btn.setText("리슨 중지")
                     self._status_lbl.setText(f"리슨 중: 0.0.0.0:{port}")
                     self.log.info(f"서버 시작: 포트 {port}")
+                    self._mode_client.setEnabled(False)
+                    self._mode_server.setEnabled(False)
 
     # ── Client 이벤트 ────────────────────────────────────────────────────────
 
@@ -864,6 +875,8 @@ class MainWindow(QMainWindow):
         self._status_lbl.setText(f"연결됨: {self._host_input.text()}:{self._port_input.value()}")
         self.log.info("PF6000 연결됨")
         self._keepalive_timer.start()
+        self._mode_client.setEnabled(False)
+        self._mode_server.setEnabled(False)
 
     @Slot()
     def _on_client_disconnected(self):
@@ -871,6 +884,8 @@ class MainWindow(QMainWindow):
         self._connect_btn.setText("연결")
         self._status_lbl.setText("연결 안됨")
         self.log.info("연결 해제")
+        self._mode_client.setEnabled(True)
+        self._mode_server.setEnabled(True)
 
     @Slot()
     def _send_keepalive(self):
@@ -913,6 +928,12 @@ class MainWindow(QMainWindow):
         self._client_list_widget.addItem(conn.address)
         self._status_lbl.setText(f"리슨 중 | 클라이언트: {self._server.client_count}개")
         self.log.info(f"클라이언트 연결: {conn.address}")
+        conn.keepalive_timeout.connect(self._on_client_keepalive_timeout)
+
+    @Slot(object)
+    def _on_client_keepalive_timeout(self, conn: ClientConnection):
+        self.log.warn(f"Keepalive 타임아웃 — 연결 강제 해제: {conn.address}")
+        conn.disconnect()
 
     @Slot(object)
     def _on_server_client_disconnected(self, conn: ClientConnection):
@@ -956,6 +977,7 @@ class MainWindow(QMainWindow):
                 conn.send(r); self.log.tx(r)
         elif mid == 3:   ack()   # Communication Stop
         elif mid == 9999:
+            conn.reset_keepalive_timer()
             conn.send(proto.build_keep_alive())
             self.log.tx(proto.build_keep_alive())
 

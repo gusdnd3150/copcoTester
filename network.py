@@ -2,7 +2,7 @@
 Atlas Copco Open Protocol TCP 클라이언트 / 서버
 """
 
-from PySide6.QtCore import QObject, Signal, QByteArray
+from PySide6.QtCore import QObject, Signal, QByteArray, QTimer
 from PySide6.QtNetwork import QTcpServer, QTcpSocket, QHostAddress
 
 from protocol import Message, HEADER_SIZE
@@ -74,14 +74,30 @@ class ClientConnection(QObject):
 
     message_received = Signal(object, object)   # (ClientConnection, Message)
     disconnected = Signal(object)               # ClientConnection
+    keepalive_timeout = Signal(object)          # ClientConnection
+
+    KEEPALIVE_TIMEOUT_MS = 10_000
 
     def __init__(self, socket: QTcpSocket, parent=None):
         super().__init__(parent)
         self._socket = socket
         self._buffer = b""
 
+        self._ka_timer = QTimer(self)
+        self._ka_timer.setSingleShot(True)
+        self._ka_timer.setInterval(self.KEEPALIVE_TIMEOUT_MS)
+        self._ka_timer.timeout.connect(lambda: self.keepalive_timeout.emit(self))
+        self._ka_timer.start()
+
         self._socket.readyRead.connect(self._on_data)
-        self._socket.disconnected.connect(lambda: self.disconnected.emit(self))
+        self._socket.disconnected.connect(self._on_disconnected)
+
+    def _on_disconnected(self):
+        self._ka_timer.stop()
+        self.disconnected.emit(self)
+
+    def reset_keepalive_timer(self):
+        self._ka_timer.start()
 
     def send(self, msg: Message):
         self._socket.write(QByteArray(msg.to_bytes()))

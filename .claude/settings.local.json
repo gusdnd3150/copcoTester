@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd C:/gitlab-teia/modules/copco && python -c \"from protocol import Message, build_comm_start; m = build_comm_start\\(\\); print\\(m.to_bytes\\(\\)\\)\")",
+      "Bash(cd C:/gitlab-teia/modules/copco && python -c \"from main_window import MainWindow; print\\('OK'\\)\")",
+      "Bash(cd C:/gitlab-teia/modules/copco && python main.py 2>&1)",
+      "Bash(pip install:*)",
+      "Bash(pip show:*)",
+      "Bash(python -c \"\nimport fitz, sys\nsys.stdout.reconfigure\\(encoding='utf-8'\\)\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\nprint\\(f'Total pages: {doc.page_count}'\\)\ntoc = doc.get_toc\\(\\)\nfor item in toc[:80]:\n    print\\(item\\)\n\" 2>&1)",
+      "Bash(python << 'EOF'\nimport fitz, sys\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\n# 처음 5페이지 텍스트\nfor i in range\\(5\\):\n    page = doc[i]\n    text = page.get_text\\(\\)\n    print\\(f\"=== PAGE {i+1} ===\"\\)\n    print\\(text[:2000]\\)\n    print\\(\\)\nEOF)",
+      "Bash(python << 'EOF'\nimport fitz\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\n# MID 목록만 추출 \\(목차에서\\)\nfor i in range\\(2, 10\\):\n    page = doc[i]\n    text = page.get_text\\(\\)\n    # MID 번호가 있는 줄만\n    for line in text.splitlines\\(\\):\n        if 'MID' in line and \\('00' in line or '99' in line\\):\n            print\\(line.strip\\(\\)\\)\nEOF)",
+      "Bash(python << 'EOF'\nimport fitz, sys, io\nsys.stdout = io.TextIOWrapper\\(sys.stdout.buffer, encoding='utf-8', errors='replace'\\)\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\n\n# MID 0060~0067 섹션\nfor i in range\\(50, 130\\):\n    page = doc[i]\n    text = page.get_text\\(\\)\n    if 'MID 0060' in text or 'Last tightening' in text:\n        print\\(f\"=== PAGE {i+1} ===\"\\)\n        print\\(text[:4000]\\)\n        print\\(\\)\nEOF)",
+      "Bash(python << 'EOF'\nimport fitz, sys, io\nsys.stdout = io.TextIOWrapper\\(sys.stdout.buffer, encoding='utf-8', errors='replace'\\)\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\n\n# MID 0061 Rev 1 전체 \\(page 139~141\\)\nfor i in range\\(138, 142\\):\n    page = doc[i]\n    print\\(f\"=== PAGE {i+1} ===\"\\)\n    print\\(page.get_text\\(\\)\\)\n    print\\(\\)\nEOF)",
+      "Bash(python << 'EOF'\nimport fitz, sys, io\nsys.stdout = io.TextIOWrapper\\(sys.stdout.buffer, encoding='utf-8', errors='replace'\\)\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\n\n# MID 0014~0020 \\(Parameter set\\), MID 0034~0038 \\(Job\\), MID 0070~0073 \\(Alarm\\)\nfor i in range\\(87, 100\\):\n    page = doc[i]\n    text = page.get_text\\(\\)\n    if any\\(x in text for x in ['MID 0014','MID 0018','MID 0015','MID 0016']\\):\n        print\\(f\"=== PAGE {i+1} ===\"\\)\n        print\\(text[:3000]\\)\n        print\\(\\)\nEOF)",
+      "Bash(python << 'EOF'\nimport fitz, sys, io\nsys.stdout = io.TextIOWrapper\\(sys.stdout.buffer, encoding='utf-8', errors='replace'\\)\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\n\n# MID 0071 Alarm format\nfor i in range\\(170, 185\\):\n    page = doc[i]\n    text = page.get_text\\(\\)\n    if 'MID 0071' in text or 'MID 0070' in text or 'Alarm data' in text:\n        print\\(f\"=== PAGE {i+1} ===\"\\)\n        print\\(text[:3000]\\)\n        print\\(\\)\nEOF)",
+      "Bash(python << 'EOF'\nimport fitz, sys, io\nsys.stdout = io.TextIOWrapper\\(sys.stdout.buffer, encoding='utf-8', errors='replace'\\)\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\n\n# MID 0071 Rev 1\nfor i in range\\(168, 174\\):\n    page = doc[i]\n    text = page.get_text\\(\\)\n    print\\(f\"=== PAGE {i+1} ===\"\\)\n    print\\(text[:2500]\\)\n    print\\(\\)\nEOF)",
+      "Bash(cd C:/gitlab-teia/modules/copco && python -c \"from main_window import MainWindow; print\\('OK'\\)\" 2>&1)",
+      "Bash(python << 'EOF'\nimport fitz, sys, io\nsys.stdout = io.TextIOWrapper\\(sys.stdout.buffer, encoding='utf-8', errors='replace'\\)\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\nfor i in range\\(72, 80\\):\n    page = doc[i]\n    text = page.get_text\\(\\)\n    if 'MID 0001' in text or 'MID 0002' in text:\n        print\\(f\"=== PAGE {i+1} ===\"\\)\n        print\\(text\\)\n        print\\(\\)\nEOF)",
+      "Bash(python << 'EOF'\nimport fitz, sys, io\nsys.stdout = io.TextIOWrapper\\(sys.stdout.buffer, encoding='utf-8', errors='replace'\\)\ndoc = fitz.open\\('C:/Users/user/Desktop/업무/공장 협의 참고 전문자료/OpenProtocol_Specification_R_2_14_0_9836 4415 01.pdf'\\)\nfor i in range\\(67, 73\\):\n    page = doc[i]\n    print\\(f\"=== PAGE {i+1} ===\"\\)\n    print\\(page.get_text\\(\\)\\)\n    print\\(\\)\nEOF)",
+      "Bash(cd C:/gitlab-teia/modules/copco && pyinstaller --onefile --windowed --name \"PF6000_Tester\" --add-data \"protocol.py;.\" --add-data \"network.py;.\" --add-data \"main_window.py;.\" main.py 2>&1)",
+      "Bash(cd C:/gitlab-teia/modules/copco && pyinstaller --onefile --windowed --name PF6000_Tester main.py 2>&1)",
+      "Read(//mnt/c/gitlab-teia/modules/**)",
+      "Bash(cd \"C:/gitlab-teia/modules/copco\" && .venv/Scripts/pyinstaller.exe PF6000_Tester.spec --noconfirm 2>&1)",
+      "Bash(ls \"C:/gitlab-teia/modules/copco/\"*.png \"C:/gitlab-teia/modules/copco/\"*.ico 2>/dev/null)",
+      "Bash(cd \"C:/gitlab-teia/modules/copco\" && .venv/Scripts/python.exe -c \"\nfrom PIL import Image\nimg = Image.open\\('copco.png'\\).convert\\('RGBA'\\)\nimg.save\\('copco.ico', format='ICO', sizes=[\\(16,16\\),\\(32,32\\),\\(48,48\\),\\(64,64\\),\\(128,128\\),\\(256,256\\)]\\)\nprint\\('변환 완료'\\)\n\")",
+      "Bash(cd \"C:/gitlab-teia/modules/copco\" && .venv/Scripts/pip.exe install Pillow -q && .venv/Scripts/python.exe -c \"\nfrom PIL import Image\nimg = Image.open\\('copco.png'\\).convert\\('RGBA'\\)\nimg.save\\('copco.ico', format='ICO', sizes=[\\(16,16\\),\\(32,32\\),\\(48,48\\),\\(64,64\\),\\(128,128\\),\\(256,256\\)]\\)\nprint\\('변환 완료'\\)\n\")",
+      "Bash(cd \"C:/gitlab-teia/modules/copco\" && .venv/Scripts/pyinstaller.exe PF6000_Tester.spec --noconfirm 2>&1 | tail -5)",
+      "Bash(ls:*)",
+      "Bash(cd:*)",
+      "Bash(wait:*)"
+    ]
+  }
+}

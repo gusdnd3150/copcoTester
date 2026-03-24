@@ -692,7 +692,7 @@ class MainWindow(QMainWindow):
         self._client_list: list[ClientConnection] = []
 
         self._keepalive_timer = QTimer(self)
-        self._keepalive_timer.setInterval(10_000)  # 10초
+        self._keepalive_timer.setInterval(10_000)  # 10초 – 클라이언트 모드 킵어라이브 전송 주기
         self._keepalive_timer.timeout.connect(self._send_keepalive)
 
         self._setup_ui()

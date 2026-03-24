@@ -76,7 +76,7 @@ class ClientConnection(QObject):
     disconnected = Signal(object)               # ClientConnection
     keepalive_timeout = Signal(object)          # ClientConnection
 
-    KEEPALIVE_TIMEOUT_MS = 10_000
+    KEEPALIVE_TIMEOUT_MS = 20_000
 
     def __init__(self, socket: QTcpSocket, parent=None):
         super().__init__(parent)

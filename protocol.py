@@ -74,6 +74,7 @@ MID_NAMES = {
     48:   "Tool pairing status",
     # VIN
     50:   "Vehicle ID number download request",
+    150:   "Vehicle ID number download request", # 신규 MID
     51:   "Vehicle ID number subscribe",
     52:   "Vehicle ID number",
     53:   "Vehicle ID number acknowledge",
@@ -107,6 +108,8 @@ MID_NAMES = {
     92:   "Multi-spindle status acknowledge",
     93:   "Multi-spindle status unsubscribe",
     100:  "Multi-spindle result subscribe",
+    #
+    157:  "reset MID",
     # Keep Alive
     9999: "Keep alive",
 }
@@ -427,6 +430,11 @@ def build_vin_download(vin: str) -> Message:
     return Message(mid=50, data=f"{vin:<25.25}")
 
 
+def build_vin_download_150(vin: str) -> Message:
+    """MID 0150 – Vehicle ID number download request (extended, up to 25 chars)"""
+    return Message(mid=150, data=f"{vin:<25.25}")
+
+
 def build_vin_subscribe() -> Message:
     """MID 0051 – Vehicle ID number subscribe"""
     return Message(mid=51)
@@ -576,3 +584,10 @@ def build_set_time(dt: datetime | None = None) -> Message:
     if dt is None:
         dt = datetime.now()
     return Message(mid=82, data=dt.strftime("%Y-%m-%d:%H:%M:%S"))
+
+
+# ─── Reset ───────────────────────────────────────────────────────────────────
+
+def build_reset_mid() -> Message:
+    """MID 0157 – Reset controller"""
+    return Message(mid=157)

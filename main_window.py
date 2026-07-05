@@ -562,6 +562,7 @@ class ToolTab(QWidget):
         g_req.addWidget(_btn("MID 0040 – Tool 데이터 요청", lambda: self.w.send(proto.build_tool_data_request())))
         g_req.addWidget(_btn("MID 0042 – Tool 비활성화", lambda: self.w.send(proto.build_disable_tool())))
         g_req.addWidget(_btn("MID 0043 – Tool 활성화", lambda: self.w.send(proto.build_enable_tool())))
+        g_req.addWidget(_btn("MID 0157 – Reset", lambda: self.w.send(proto.build_reset_mid())))
         layout.addWidget(grp_req)
 
         self.grp_server = QGroupBox("MID 0041 – Tool data upload reply  [Controller → Integrator]")
@@ -606,12 +607,13 @@ class VinTab(QWidget):
         self.w = window
         layout = QVBoxLayout(self)
 
-        self.grp_client = QGroupBox("Integrator → Controller  [MID 0050 / 0051 / 0053 / 0054]")
+        self.grp_client = QGroupBox("Integrator → Controller  [MID 0050 / 0051 / 0053 / 0054 / 0150]")
         g = QFormLayout(self.grp_client)
         self.vin_input = QLineEdit(); self.vin_input.setMaxLength(25); self.vin_input.setPlaceholderText("최대 25자")
         g.addRow("VIN:", self.vin_input)
         h = QHBoxLayout()
         h.addWidget(_btn("MID 0050 – VIN 설정", lambda: self.w.send(proto.build_vin_download(self.vin_input.text()))))
+        h.addWidget(_btn("MID 0150 – VIN 설정 (신규)", lambda: self.w.send(proto.build_vin_download_150(self.vin_input.text()))))
         h.addWidget(_btn("MID 0051 – VIN 구독", lambda: self.w.send(proto.build_vin_subscribe())))
         h.addWidget(_btn("MID 0053 – VIN ACK", lambda: self.w.send(proto.build_vin_ack())))
         h.addWidget(_btn("MID 0054 – VIN 구독 해지", lambda: self.w.send(proto.build_vin_unsubscribe())))
@@ -1024,6 +1026,11 @@ class MainWindow(QMainWindow):
             self._tightening_tab.vin.setText(vin)
             self.log.info(f"[자동세팅] Tightening VIN ← '{vin}' (MID 0050)")
             ack()
+        elif mid == 150:         # VIN Download (신규) → Tightening 탭 자동 세팅 + ACK
+            vin = msg.data[:25].strip() if len(msg.data) >= 25 else msg.data.strip()
+            self._tightening_tab.vin.setText(vin)
+            self.log.info(f"[자동세팅] Tightening VIN ← '{vin}' (MID 0150)")
+            ack()
         elif mid == 51:  ack()   # VIN Subscribe
         elif mid == 53:  pass    # VIN ACK
         elif mid == 54:  ack()   # VIN Unsubscribe
@@ -1048,6 +1055,9 @@ class MainWindow(QMainWindow):
             r = proto.build_time_reply()
             conn.send(r); self.log.tx(r)
         elif mid == 82:  ack()   # Set Time
+
+        # Reset
+        elif mid == 157: ack()   # Reset controller
 
         else:
             nak(98)

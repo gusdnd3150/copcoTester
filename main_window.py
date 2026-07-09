@@ -992,10 +992,7 @@ class MainWindow(QMainWindow):
         elif mid == 18:          # Select PS → MID 0015 PS Selected 자동 응답 + Tightening 탭 자동 세팅
             ps_id = int(msg.data[:3]) if msg.data[:3].isdigit() else 1
             self._tightening_tab.ps_id.setValue(ps_id)
-            self.log.info(f"[자동세팅] Tightening PS ID ← {ps_id} (MID 0018)")
-            if self._auto_ack.isChecked():
-                r = proto.Message(mid=15, data=f"01{ps_id:03d}")
-                conn.send(r); self.log.tx(r)
+            ack()
         elif mid == 19:  ack()   # Set PS Batch Size
         elif mid == 20:  ack()   # Reset Batch Counter
 

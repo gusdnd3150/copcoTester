@@ -295,6 +295,23 @@ class JobTab(QWidget):
         g_reply.addRow("Job 이름:", self.r_job_name)
         g_reply.addRow("PS ID 목록 (쉼표 구분):", self.r_job_ps_ids)
         grp_reply.layout().addRow(_btn("MID 0033 – Job 데이터 전송 (Broadcast)", self._send_0033))
+
+        g_reply.addRow(QLabel(""))
+        g_reply.addRow(QLabel("─── MID 0035 – Job info (필드ID 포함, 63 bytes) ───────────────"))
+        self.info_job_id = QSpinBox(); self.info_job_id.setRange(0, 99); self.info_job_id.setValue(1)
+        self.info_job_status = QComboBox()
+        self.info_job_status.addItems(["1 – OK", "0 – NOK", "2 – Not used", "3 – Running"])
+        self.info_batch_mode = QComboBox()
+        self.info_batch_mode.addItems(["0 – Not used", "1 – Job batch"])
+        self.info_batch_size = QSpinBox(); self.info_batch_size.setRange(0, 9999)
+        self.info_batch_counter = QSpinBox(); self.info_batch_counter.setRange(0, 9999)
+        g_reply.addRow("Job ID:", self.info_job_id)
+        g_reply.addRow("Job Status:", self.info_job_status)
+        g_reply.addRow("Job Batch Mode:", self.info_batch_mode)
+        g_reply.addRow("Job Batch Size:", self.info_batch_size)
+        g_reply.addRow("Job Batch Counter:", self.info_batch_counter)
+        g_reply.addRow(QLabel("※ Timestamp 필드는 전송 시각으로 자동 채워집니다"))
+        grp_reply.layout().addRow(_btn("MID 0035 – Job Info 전송 (Broadcast)", self._send_0035))
         layout.addWidget(grp_reply)
         layout.addStretch()
 
@@ -315,6 +332,15 @@ class JobTab(QWidget):
             self.w.send(proto.build_job_data_reply(self.r_job_id.value(), self.r_job_name.text(), ps_ids))
         except ValueError:
             self.w.log.error("PS ID 목록 형식 오류")
+
+    def _send_0035(self):
+        self.w.send(proto.build_job_info(
+            job_id=self.info_job_id.value(),
+            job_status=int(self.info_job_status.currentText()[0]),
+            job_batch_mode=int(self.info_batch_mode.currentText()[0]),
+            batch_size=self.info_batch_size.value(),
+            batch_counter=self.info_batch_counter.value(),
+        ))
 
 
 # ─── 탭: Tightening (MID 0060~0063) ──────────────────────────────────────────

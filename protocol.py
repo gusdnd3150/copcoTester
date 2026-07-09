@@ -376,6 +376,30 @@ def build_job_info_subscribe() -> Message:
     return Message(mid=34)
 
 
+def build_job_info(job_id: int, job_status: int = 1, job_batch_mode: int = 0,
+                    batch_size: int = 0, batch_counter: int = 0,
+                    dt: datetime | None = None) -> Message:
+    """MID 0035 – Job info (Controller → Integrator, MID 0034 구독에 대한 응답)
+
+    Rev 1: 필드 ID 포함, 총 패킷 63 bytes (헤더 20 + 데이터 43)
+      01+Job ID(2) 02+Job status(1) 03+Job batch mode(1)
+      04+Job batch size(4) 05+Job batch counter(4) 06+Timestamp(19)
+    job_status: 0=NOK, 1=OK, 2=Not used, 3=Running
+    """
+    if dt is None:
+        dt = datetime.now()
+    time_str = dt.strftime("%Y-%m-%d:%H:%M:%S")
+    data = (
+        f"01{job_id:02d}"
+        f"02{job_status:01d}"
+        f"03{job_batch_mode:01d}"
+        f"04{batch_size:04d}"
+        f"05{batch_counter:04d}"
+        f"06{time_str}"
+    )
+    return Message(mid=35, data=data)
+
+
 def build_job_info_ack() -> Message:
     """MID 0036 – Job info acknowledge"""
     return Message(mid=36)
